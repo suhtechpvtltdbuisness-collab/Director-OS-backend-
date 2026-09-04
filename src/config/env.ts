@@ -23,7 +23,12 @@ function required(name: string, fallback?: string): string {
 function parseOrigins(): string[] {
   const fromList = process.env.CLIENT_ORIGINS ?? "";
   const single = process.env.CLIENT_ORIGIN ?? "http://localhost:5173";
-  const defaults = ["http://localhost:5173", "http://127.0.0.1:5173", "http://localhost:4173"];
+  const defaults = [
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+    "http://localhost:4173",
+    "https://director-os-ashen.vercel.app",
+  ];
   return Array.from(
     new Set(
       [...defaults, single, ...fromList.split(",")]
