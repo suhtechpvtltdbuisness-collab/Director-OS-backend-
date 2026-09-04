@@ -7,7 +7,8 @@ try {
 }
 
 function required(name: string, fallback?: string): string {
-  const value = process.env[name] ?? fallback;
+  const raw = process.env[name];
+  const value = (raw && raw.trim()) || fallback;
   if (!value) throw new Error(`Missing required env var: ${name}`);
   return value;
 }
