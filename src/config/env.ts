@@ -1,18 +1,10 @@
 import dotenv from "dotenv";
-import fs from "fs";
-import path from "path";
 
-function loadDotenv(): void {
-  const candidates = [
-    path.resolve(process.cwd(), ".env"),
-    path.resolve(__dirname, "../../.env"),
-  ];
-  const envPath = candidates.find((p) => fs.existsSync(p));
-  if (envPath) dotenv.config({ path: envPath, override: true });
-  else dotenv.config({ override: true });
+try {
+  dotenv.config();
+} catch {
+  // ignore missing .env in serverless
 }
-
-loadDotenv();
 
 function required(name: string, fallback?: string): string {
   const value = process.env[name] ?? fallback;
