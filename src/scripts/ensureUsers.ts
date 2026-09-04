@@ -19,19 +19,26 @@ export async function ensureSeedUsers(): Promise<void> {
   ];
 
   for (const u of users) {
-    const existing = await User.findOne({ email: u.email });
-    if (existing) {
-      existing.name = u.name;
-      existing.role = u.role;
-      existing.passwordHash = await hashPassword(u.password);
-      await existing.save();
-      continue;
+    if (!u.email?.trim() || !u.name?.trim() || !u.password) {
+      throw new Error(`Invalid seed user config for role=${u.role}`);
     }
-    await User.create({
-      email: u.email,
-      name: u.name,
-      role: u.role,
-      passwordHash: await hashPassword(u.password),
-    });
+
+    const passwordHash = await hashPassword(u.password);
+    await User.findOneAndUpdate(
+      { email: u.email.toLowerCase() },
+      {
+        $set: {
+          email: u.email.toLowerCase(),
+          name: u.name,
+          role: u.role,
+          passwordHash,
+        },
+        $setOnInsert: {
+          otpHash: null,
+          otpExpiresAt: null,
+        },
+      },
+      { upsert: true, new: true, runValidators: true, setDefaultsOnInsert: true },
+    );
   }
 }
