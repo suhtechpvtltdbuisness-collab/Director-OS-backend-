@@ -41,9 +41,11 @@ export async function requireDatabase(
       next(error);
       return;
     }
+    const detail =
+      error instanceof Error ? error.message : "Unknown database error";
     next(
       new AppError(
-        "Database unavailable. Check MONGODB_URI on Vercel, Atlas user/password, and Network Access (allow 0.0.0.0/0).",
+        `Database unavailable: ${detail}. On Atlas → Network Access, allow IP 0.0.0.0/0, then Redeploy.`,
         503,
       ),
     );
